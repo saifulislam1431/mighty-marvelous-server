@@ -39,6 +39,11 @@ async function run() {
             const result = await toysCollection.insertOne(body);
             res.send(result);
         })
+        // Total Toy Count
+        app.get("/totalToys",async(req,res)=>{
+            const result = await toysCollection.estimatedDocumentCount();
+            res.send({totalToys : result})
+        })
 
 
 
