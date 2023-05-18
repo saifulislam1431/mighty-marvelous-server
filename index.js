@@ -27,22 +27,44 @@ async function run() {
         await client.connect();
 
         const toysCollection = client.db("mightyMarvelousToys").collection("allToys");
+        // Get All Toys
+        app.get("/allToys", async (req, res) => {
+            const page = parseInt(req.query.page);
+            const limit = parseInt(req.query.limit);
+            const skip = page * limit;
+            const result = await toysCollection.find().skip(skip).limit(limit).toArray();
+            res.send(result)
+        })
 
-        app.get("/allToys",async(req,res)=>{
-            const result = await toysCollection.find().toArray();
+        // Search toys by name
+
+        const indexKeys = {toyName : 1};
+        const indexOptions = {name : "title"}
+        const result = await toysCollection.createIndex(indexKeys , indexOptions);
+        
+        app.get("/toyByName/:text", async(req,res)=>{
+            const text = req.params.text;
+            const result = await toysCollection.find({
+                $or:[
+                    {toyName:{$regex:text, $options:"i"}}
+                ],
+            }).toArray()
             res.send(result)
         })
 
         // Add Toy API
-        app.post("/allToys",async(req,res)=>{
+        app.post("/allToys", async (req, res) => {
             const body = req.body;
             const result = await toysCollection.insertOne(body);
             res.send(result);
         })
+
+
+
         // Total Toy Count
-        app.get("/totalToys",async(req,res)=>{
+        app.get("/totalToys", async (req, res) => {
             const result = await toysCollection.estimatedDocumentCount();
-            res.send({totalToys : result})
+            res.send({ totalToys: result })
         })
 
 
