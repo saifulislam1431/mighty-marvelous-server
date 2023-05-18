@@ -31,8 +31,12 @@ async function run() {
         app.get("/allToys", async (req, res) => {
             const page = parseInt(req.query.page);
             const limit = parseInt(req.query.limit);
+            const sortValue = parseInt(req.query.sort)
+
+            const sortBy = {price : sortValue}
+
             const skip = page * limit;
-            const result = await toysCollection.find().skip(skip).limit(limit).toArray();
+            const result = await toysCollection.find().sort(sortBy).skip(skip).limit(limit).toArray();
             res.send(result)
         })
 
