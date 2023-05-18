@@ -55,6 +55,21 @@ async function run() {
             res.send(result);
         })
 
+        // Toy by category
+
+        app.get("/tabsToys/:text", async (req, res) => {
+            const query = req.params.text;
+            console.log(query);
+            if (req.params.text == "Marvel" || req.params.text == "DC Comics" || req.params.text == "Image" || req.params.text == "Dark Horse") {
+                const result = await toysCollection.find({ toySubCategory: req.params.text }).toArray();
+                return res.send(result);
+            }
+
+            const result = await toysCollection.find({}).toArray();
+            res.send(result);
+
+        })
+
         // Single Toy
         app.get("/userToy/:id", async (req, res) => {
             const id = req.params.id;
@@ -121,7 +136,7 @@ async function run() {
                     details: updatedData.details
                 }
             }
-            const result = await toysCollection.updateOne(filter,updateDoc,options);
+            const result = await toysCollection.updateOne(filter, updateDoc, options);
             res.send(result);
         })
 
