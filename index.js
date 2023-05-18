@@ -27,6 +27,13 @@ async function run() {
         await client.connect();
 
         const toysCollection = client.db("mightyMarvelousToys").collection("allToys");
+
+        // Total Toy Count
+        app.get("/totalToys", async (req, res) => {
+            const result = await toysCollection.estimatedDocumentCount();
+            res.send({ totalToys: result })
+        })
+
         // Get All Toys
         app.get("/allToys", async (req, res) => {
             const page = parseInt(req.query.page);
@@ -55,7 +62,6 @@ async function run() {
             if (req.query?.email) {
                 query = { sellerEmail: req.query.email }
             };
-            console.log(query);
             const result = await toysCollection.find(query).toArray();
             res.send(result)
         })
@@ -83,13 +89,16 @@ async function run() {
             res.send(result);
         })
 
-
-
-        // Total Toy Count
-        app.get("/totalToys", async (req, res) => {
-            const result = await toysCollection.estimatedDocumentCount();
-            res.send({ totalToys: result })
+        // Delete Api
+        app.delete("/allToys/:id",async(req,res)=>{
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await toysCollection.deleteOne(query)
+            res.send(result);
         })
+
+
+
 
 
 
