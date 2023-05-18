@@ -28,7 +28,17 @@ async function run() {
 
         const toysCollection = client.db("mightyMarvelousToys").collection("allToys");
 
+        app.get("/allToys",async(req,res)=>{
+            const result = await toysCollection.find().toArray();
+            res.send(result)
+        })
 
+        // Add Toy API
+        app.post("/allToys",async(req,res)=>{
+            const body = req.body;
+            const result = await toysCollection.insertOne(body);
+            res.send(result);
+        })
 
 
 
