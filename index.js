@@ -55,6 +55,14 @@ async function run() {
             res.send(result);
         })
 
+        // Single Toy
+        app.get("/userToy/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await toysCollection.findOne(query)
+            res.send(result);
+        })
+
 
         // Toy by user email
         app.get("/userToy", async (req, res) => {
@@ -90,10 +98,30 @@ async function run() {
         })
 
         // Delete Api
-        app.delete("/allToys/:id",async(req,res)=>{
+        app.delete("/allToys/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await toysCollection.deleteOne(query)
+            res.send(result);
+        })
+
+        //Update Api
+        app.put("/allToys/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true }
+            const updatedData = req.body;
+            const updateDoc = {
+                $set: {
+                    toyName: updatedData.toyName, toySubCategory: updatedData.toySubCategory,
+                    sellerName: updatedData.sellerName, sellerEmail: updatedData.sellerEmail, price: updatedData.price,
+                    quantity: updatedData.quantity,
+                    rating: updatedData.rating,
+                    photo: updatedData.photo,
+                    details: updatedData.details
+                }
+            }
+            const result = await toysCollection.updateOne(filter,updateDoc,options);
             res.send(result);
         })
 
