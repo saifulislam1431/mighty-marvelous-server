@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 const app = express();
@@ -33,24 +33,44 @@ async function run() {
             const limit = parseInt(req.query.limit);
             const sortValue = parseInt(req.query.sort)
 
-            const sortBy = {price : sortValue}
+            const sortBy = { price: sortValue }
 
             const skip = page * limit;
             const result = await toysCollection.find().sort(sortBy).skip(skip).limit(limit).toArray();
             res.send(result)
         })
 
-        // Search toys by name
+        // Single Toy
+        app.get("/allToys/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await toysCollection.findOne(query)
+            res.send(result);
+        })
 
-        const indexKeys = {toyName : 1};
-        const indexOptions = {name : "title"}
-        const result = await toysCollection.createIndex(indexKeys , indexOptions);
-        
-        app.get("/toyByName/:text", async(req,res)=>{
+
+        // Toy by user email
+        app.get("/userToy", async (req, res) => {
+            let query = {};
+            if (req.query?.email) {
+                query = { sellerEmail: req.query.email }
+            };
+            console.log(query);
+            const result = await toysCollection.find(query).toArray();
+            res.send(result)
+        })
+
+
+        // Search toys by name
+        const indexKeys = { toyName: 1 };
+        const indexOptions = { name: "title" }
+        const result = await toysCollection.createIndex(indexKeys, indexOptions);
+
+        app.get("/toyByName/:text", async (req, res) => {
             const text = req.params.text;
             const result = await toysCollection.find({
-                $or:[
-                    {toyName:{$regex:text, $options:"i"}}
+                $or: [
+                    { toyName: { $regex: text, $options: "i" } }
                 ],
             }).toArray()
             res.send(result)
