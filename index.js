@@ -47,8 +47,17 @@ async function run() {
             res.send(result)
         })
 
+
         // Single Toy
         app.get("/allToys/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await toysCollection.findOne(query)
+            res.send(result);
+        })
+
+        // Single Toy
+        app.get("/updateToy/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await toysCollection.findOne(query)
@@ -106,7 +115,7 @@ async function run() {
         })
 
         // Add Toy API
-        app.post("/allToys", async (req, res) => {
+        app.post("/addToys", async (req, res) => {
             const body = req.body;
             const result = await toysCollection.insertOne(body);
             res.send(result);
@@ -121,7 +130,7 @@ async function run() {
         })
 
         //Update Api
-        app.put("/allToys/:id", async (req, res) => {
+        app.put("/updateToy/:id", async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const options = { upsert: true }
