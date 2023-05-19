@@ -6,6 +6,7 @@ const port = process.env.PORT || 5000;
 const app = express();
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.8cnv71c.mongodb.net/?retryWrites=true&w=majority`;
 
+
 app.use(cors());
 app.use(express.json());
 
@@ -24,7 +25,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
 
         const toysCollection = client.db("mightyMarvelousToys").collection("allToys");
 
@@ -63,6 +64,16 @@ async function run() {
             const result = await toysCollection.findOne(query)
             res.send(result);
         })
+
+
+        // Single Toy
+        app.get("/deleteToy/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await toysCollection.findOne(query)
+            res.send(result);
+        })
+
 
         // Toy by category
 
@@ -122,7 +133,7 @@ async function run() {
         })
 
         // Delete Api
-        app.delete("/allToys/:id", async (req, res) => {
+        app.delete("/deleteToy/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await toysCollection.deleteOne(query)
